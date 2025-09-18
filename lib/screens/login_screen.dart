@@ -11,6 +11,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   // Variable para controlar la visibilidad de la contraseña
   bool _obscureText = true;
+  
+  //Logica animaciones
+  StateMachineController? controller;
+  //State machine inputs
+  SMIBool? isChecking;// ojo cerrado
+  SMIBool? isHandsUp; // manos arriba
+  SMITrigger? trigSuccess; // activar la mirada
+  SMITrigger? trigFail; // desactivar la mirada
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +34,40 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               width: size.width,
               height: 200,
-              child: RiveAnimation.asset('assets/animated_login_character.riv'),
+              child: RiveAnimation.asset(
+                'assets/animated_login_character.riv',
+                stateMachines: ["Login Machine"],
+                //Al iniciar la animacion
+                onInit: (artboard){
+                  controller= StateMachineController.fromArtboard(
+                    artboard,
+                    'Login Machine'
+                    );
+                  if(controller == null) return;
+                  artboard.addController(controller!);
+                  //asignar los inputs
+                  isChecking = controller!.findSMI('isChecking');
+                  isHandsUp = controller!.findSMI('isHandsUp');
+                  trigSuccess = controller!.findSMI('trigSuccess');
+                  trigFail = controller!.findSMI('trigFail');
+                  
+                },
+              ),
             ),
             // espacio entre el oso y el email
             const SizedBox(height: 10),
             // campo de texto de email
             TextField(
               keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                // Lógica para manejar el cambio en el campo de email
+                if(isHandsUp != null){
+                  isHandsUp!.change(false);
+                } 
+                if(isChecking == null)return;{
+                  isChecking!.change(true);
+                }
+              },
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.email),
                 border: OutlineInputBorder(
@@ -39,19 +75,39 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 labelText: 'Email',
                 hintText: 'Ingresa tu email',
+
               ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             TextField(
-              obscureText: _obscureText, // Usamos la variable para controlar la visibilidad
+              obscureText: _obscureText,
+              onChanged: (value) {
+                // Lógica para manejar el cambio en el campo de email
+                if(isHandsUp != null){
+                  isChecking?.change(false);
+                } 
+                if(isChecking == null)return;{
+                  isChecking?.change(true);
+                }
+              }, // Usamos la variable para controlar la visibilidad
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.password),
+                prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
+                  
                   icon: Icon(
                     _obscureText ? Icons.visibility : Icons.visibility_off,
                   ),
                   onPressed: () {
                     setState(() {
+                      if(isChecking != null){
+                      isHandsUp!.change(true);
+                      }
+
+                      if(isHandsUp == null)return ;{   
+                      isHandsUp!.change(true);
+                      }
+                      
+                      
                       _obscureText = !_obscureText; // Cambiamos el estado al presionar
                     });
                   },
@@ -61,6 +117,72 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 labelText: 'Contraseña',
                 hintText: 'Ingresa tu contraseña',
+              ),
+            ),
+
+            const SizedBox(height: 10),
+            SizedBox(
+              width: size.width,
+              child: const Text(
+                '¿Olvidaste tu contraseña?',
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            SizedBox(
+              width: size.width,
+              height: 50,
+              child: MaterialButton(
+                color: Colors.teal[300],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 5,
+                onPressed: () { 
+                  
+                  //TODO:
+                },
+                child: const Text(
+                  'Iniciar sesión',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10,),
+
+            SizedBox(
+              width: size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('¿No tienes una cuenta?'),
+                  TextButton(
+                    onPressed: () {
+                      //TODO:
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.all(5),
+                      minimumSize: const Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      alignment: Alignment.centerLeft,
+                    ),
+                    child: const Text(
+                      'Regístrate',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+
+                  ),
+                ],
               ),
             ),
           ],
