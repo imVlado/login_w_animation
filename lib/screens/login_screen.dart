@@ -20,6 +20,29 @@ class _LoginScreenState extends State<LoginScreen> {
   SMITrigger? trigSuccess; // activar la mirada
   SMITrigger? trigFail; // desactivar la mirada
 
+  // 1)Focus node
+  final emailFocus = FocusNode();
+  final passFocus = FocusNode();
+
+  //2) listeners
+  @override
+  void initState() {
+    super.initState();
+    emailFocus.addListener((){
+      if (emailFocus.hasFocus) {
+      //manos abajo en email
+      isHandsUp!.change(false);
+      } 
+
+    });
+    passFocus.addListener((){
+      //manos arriba en password
+      isHandsUp!.change(passFocus.hasFocus);
+      });
+    
+    
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +81,14 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 10),
             // campo de texto de email
             TextField(
+              //2)Asignar focus node
+              focusNode: emailFocus,
+    
               keyboardType: TextInputType.emailAddress,
               onChanged: (value) {
                 // Lógica para manejar el cambio en el campo de email
                 if(isHandsUp != null){
-                  isHandsUp!.change(false);
+                  //isHandsUp!.change(false);
                 } 
                 if(isChecking == null)return;{
                   isChecking!.change(true);
@@ -80,11 +106,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 10),
             TextField(
+              //2)Asignar focus node
+              focusNode: passFocus,
               obscureText: _obscureText,
               onChanged: (value) {
                 // Lógica para manejar el cambio en el campo de email
                 if(isHandsUp != null){
-                  isChecking?.change(false);
+                  //isChecking?.change(false);
                 } 
                 if(isChecking == null)return;{
                   isChecking?.change(true);
@@ -189,5 +217,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+  //4)liberacion de recursos
+  @override
+  void dispose() {  
+    emailFocus.dispose();
+    passFocus.dispose();
+    super.dispose();
   }
 }
