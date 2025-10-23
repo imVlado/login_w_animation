@@ -66,14 +66,15 @@ flutter run
 
 ## 📁 Project Structure
 
-Login_with_animation/
-├── assets/
-│   └── animated_login_character.riv    # The Rive animation file
-├── lib/
-│   ├── main.dart                       # Main app entry point
-│   └── screens/
-│       └── login_screen.dart           # The login screen UI and logic
-└── pubspec.yaml                        # Project dependencies and asset declarations
+**Login_with_animation/**
+
+- **assets/**
+  - `animated_login_character.riv` - The Rive animation file
+- **lib/**
+  - `main.dart` - Main app entry point
+  - **screens/**
+    - `login_screen.dart` - The login screen UI and logic
+- `pubspec.yaml` - Project dependencies and asset declarations
 
 ### Key Files
 
